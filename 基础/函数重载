@@ -1,0 +1,82 @@
+
+函数重载是函数的一种特殊情况，C++允许在同一作用域中声明几个功能类似的同名函数
+这些同名函数的形参列表(参数个数 或 类型 或 顺序)必须不同，用来处理实现功能类似数据类型不同的问题
+
+C++这里与C的区别：
+C语言的名字修饰规则非常简单，只是在函数名字前面添加了下划线
+如：
+
+int Add(int left, int right);
+ 
+int main() 
+{ 
+  Add(1, 2); 
+  return 0; 
+}
+
+在 链接 时就会出错，编译器报错：
+error LNK2019: 无法解析的外部符号 _Add，该符号在函数 _main 中被引用 
+Add函数只给了声明没有给定义，因此在链接时就会报错，提示：在main函数中引用的Add函数找不到函数体
+从报错结果中可以看到，C语言只是简单的在函数名前添加下划线，因此当工程中存在相同函数名的函数时，就会产生冲突
+
+而C++要支持函数重载，命名空间等，使得其修饰规则比较复杂，不同编译器在底层的实现方式可能都有差异
+如：
+
+int Add(int left, int right); 
+double Add(double left, double right);
+ 
+int main() 
+{ 
+  Add(1, 2); 
+  Add(1.0, 2.0); 
+  return 0; 
+}
+
+使用VS2012编译，报错如下：
+error LNK2019: 无法解析的外部符号 "double cdecl Add(double,double)" (?Add@@YANNN@Z) error LNK2019: 无法解析的外部符号 "int __cdecl Add(int,int)" (?Add@@YAHHH@Z)
+由此可见，编译器实际在底层使用的不是Add名字，而是被重新修饰过的一个比较复杂的名字
+被重新修饰后的名字中包含了：函数的名字以及参数类型
+这就是为什么函数重载中几个同名函数要求其参数列表不同
+只要参数列表不同，编译器编译时通过对函数名字进行重新修饰，将参数类型包含在终的名字中，就可保证名字在底层的全局唯一性
+
+函数重载的条件 (函数要素:函数名,函数参数,函数返回值,函数的调用约定)
+1.函数名必须相同
+2.函数参数个数不同,类型不同,顺序不同
+3.函数返回值不做考虑
+4.作用域相同
+
+使用：
+int Add(int left, int right) 
+{ 
+  return left+right; 
+}
+
+double Add(double left, double right) 
+{ 
+  return left+right; 
+}
+
+  long Add(long left, long right) 
+{ 
+  return left+right; 
+}
+
+int main() 
+{ 
+  Add(10, 20); 
+  Add(10.0, 20.0); 
+  Add(10L, 20L);
+
+  return 0; 
+}
+
+
+此时是可以正常运行的，不同参数对应不同参数列表的函数调用
+而如果把 int Add(int left, int right) 删除，主函数中Add(10, 20); 就会报错，
+因为对于整形参数10，20，已经没有适配的参数列表接口了，此时可double Add(double left, double right) 和long Add(long left, long right) 都可以进行调用，于是便引起了冲突
+同理，如果在删除掉long Add()和double add()中的一个，便不会再报错，此时对于参数只有一个参数列表的函数可以调用了，进行隐式转换，不会再有冲突
+
+
+
+
+
