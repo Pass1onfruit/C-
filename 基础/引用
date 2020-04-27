@@ -1,0 +1,191 @@
+
+引用不是新定义一个变量，而是给已存在变量取了一个别名，声明完毕后，相当于目标变量名有两个名称，即该目标原名称和引用名
+编译器不会为引用变量开辟内存空间，它和它引用的变量共用同一块内存空间
+1. 引用在定义时必须初始化 
+2. 一个变量可以有多个引用 
+3. 引用一旦引用一个实体，再不能引用其他实体
+4.引用类型必须和引用实体是同种类型的
+
+基本使用：
+类型& 引用变量名(对象名) = 引用实体;
+
+void TestRef()
+{
+	int a = 10;
+	int& _a = a;  //定义引用类型，&在此不是求地址运算，而是起标识作用
+
+	const int b = 10;
+	//  int& _b = b;   //该语句编译时会出错，a为常量 
+	const int& _b = b;
+
+	//  int& c = 10;  // 该语句编译时会出错，b为常量 
+	const int& c = 10;
+
+	double d = 12.34;
+	//  int& _d = d;  
+// 该语句编译时会出错，类型不同
+// 这里d赋值给_d时要生成一个临时变量,_d引用的是这个带有常性的临时变量,所以不能赋值
+	const int& _d = d;
+}
+
+使用场景 :
+
+1. 做参数
+普通的值传递中，如果形参为非引用的传值方式，则生成局部临时变量接收实参的值
+而如果形参为引用类型，则形参是实参的别名
+
+//void Swap (int left, int right) 
+//如果是值传递，传参时对于参数left和right拷贝的临时副本，交换的是副本值，因为其是临时变量
+//函数退出，变量销毁，并不会影响外部left和right的值，这里的Swap函数就起不到作用
+
+//void Swap (int* pLeft, int* pRight)
+//如果传入的是地址，因为地址是唯一的，所以指针通过地址的访问进而可修改其内容
+
+void Swap(int& left, int& right)
+//使用引用的话，不做临时拷贝，直接在原参数的基础上修改变量值，也能减少复制，加快程序执行效率
+{
+	int temp = left;
+	left = right;
+	right = temp;
+}
+
+2. 做返回值
+int& Add(int a, int b)
+{
+	int c = a + b;
+	return c;
+}
+
+int main()
+{
+	int& ret = Add(1, 2);
+	Add(3, 4);
+	cout << ret << endl;
+	return 0;
+}
+此时输出的结果为 7 
+如果函数返回时，离开函数作用域后，其栈上空间已经还给系统
+因此不要返回一个局部变量的引用，不能用栈上的空间作为引用类型返回
+若返回栈变量，不能成为其他引用的初始值，不能作为左值使用
+若返回静态变量或者全局变量，可以成为其他引用的初始值，可以作为左值或者右值使用
+以引用类型返回，返回值的生命周期必须不受函数的限制(即比函数生命周期长)
+
+以值作为参数或者返回值类型，在传参和返回期间，函数不会直接传递实参或者将变量本身直接返回，而是传递实 参或者返回变量的一份临时的拷贝，因此用值作为参数或者返回值类型，效率是非常低下的，尤其是当参数或者返回 值类型非常大时，效率就更低
+
+检测值和引用在 传参 方面的效率区别
+
+#include <time.h> 
+struct A 
+{ 
+	int a[10000]; 
+};
+
+void TestFunc1(A a) {}
+void TestFunc2(A& a) {}
+
+void TestRefAndValue() 
+{
+	A a;
+
+	size_t begin1 = clock();
+	for (size_t i = 0; i < 10000; ++i)
+		TestFunc1(a);
+	size_t end1 = clock();
+
+	size_t begin2 = clock();
+	for (size_t i = 0; i < 10000; ++i)
+		TestFunc2(a);
+	size_t end2 = clock();
+	std::cout << "TestFunc1(int*)-time:" << end1 - begin1 << std::endl;
+	std::cout << "TestFunc2(int&)-time:" << end2 - begin2 << std::endl;
+}
+
+int main()
+{
+	for (int i = 0; i < 10; ++i)
+	{
+		TestRefAndValue();
+	}
+	return 0;
+}
+
+VS2012下运行，结果为：
+TestFunc1(int*)-time:12
+TestFunc2(int&)-time:0
+TestFunc1(int*)-time:12
+TestFunc2(int&)-time:0
+TestFunc1(int*)-time:13
+TestFunc2(int&)-time:0
+TestFunc1(int*)-time:12
+TestFunc2(int&)-time:1
+TestFunc1(int*)-time:11
+TestFunc2(int&)-time:0
+TestFunc1(int*)-time:11
+TestFunc2(int&)-time:0
+TestFunc1(int*)-time:11
+TestFunc2(int&)-time:0
+TestFunc1(int*)-time:10
+TestFunc2(int&)-time:1
+TestFunc1(int*)-time:11
+TestFunc2(int&)-time:0
+TestFunc1(int*)-time:12
+TestFunc2(int&)-time:0
+
+检测值和引用作为 返回值 在效率方面的区别：
+
+#include <time.h> 
+struct A
+{
+	int a[10000];
+};
+
+A a;
+A TestFunc1() { return a; }
+A& TestFunc2() { return a; }
+
+void TestReturnByRefOrValue()
+{
+	size_t begin1 = clock();
+	for (size_t i = 0; i < 100000; ++i)
+		TestFunc1();
+	size_t end1 = clock();
+
+	size_t begin2 = clock();
+	for (size_t i = 0; i < 100000; ++i)
+		TestFunc2();
+	size_t end2 = clock();
+
+	std::cout << "TestFunc1 time:" << end1 - begin1 << std::endl;
+	std::cout << "TestFunc2 time:" << end2 - begin2 << std::endl;
+}
+
+int main()
+{
+	for (int i = 0; i < 10; ++i)
+		TestReturnByRefOrValue();
+	return 0;
+}
+
+VS2012下运行多次，结果为：
+TestFunc1 time:233
+TestFunc2 time:2
+TestFunc1 time:237
+TestFunc2 time:2
+TestFunc1 time:217
+TestFunc2 time:2
+TestFunc1 time:229
+TestFunc2 time:2
+TestFunc1 time:226
+TestFunc2 time:3
+TestFunc1 time:225
+TestFunc2 time:1
+TestFunc1 time:224
+TestFunc2 time:1
+TestFunc1 time:222
+TestFunc2 time:2
+TestFunc1 time:218
+TestFunc2 time:1
+TestFunc1 time:251
+TestFunc2 time:4
+
+传值和指针在作为传参以及返回值类型上效率相差很大
