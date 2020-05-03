@@ -1,7 +1,6 @@
 常用接口：
 
 string类对象的基本构造：
-
 string()    构造空的string类对象，即空字符串
 string(const char* s)    用C-string来构造string类对象
 string(size_t n, char c)    string类对象中包含n个字符c
