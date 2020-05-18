@@ -16,6 +16,7 @@ NULL实际是一个宏
 #endif 
 #endif 
 NULL被定义为字面常量0，或者被定义为无类型指针(void*)的常量
+C++中不能将void*类型的指针隐式转换成其他指针类型，所以在C++中，NULL只是0
 
 nullptr:
 
@@ -23,8 +24,8 @@ C++11给出了全新的nullptr表示空值指针
 C++11没有在NULL的基础上进行扩展，这是因为NULL就是一个宏，而且不同的编译器对于NULL的实现可能不太相同，而且直接扩展NULL，可能会影响以前旧的程序
 为了避免混淆，C++11提供了nullptr
 
-nullptr代表一个指针空值常量，nullptr类型为nullptr_t，仅仅可以被隐式转化为指针类型
+nullptr代表一个指针空值常量，nullptr类型为std::nullptr_t，可以被隐式转化为任意指针类型
 
 在使用nullptr表示指针空值时，不需要包含头文件，nullptr是C++11作为新关键字引入的
- 在C++11中，sizeof(nullptr) 与 sizeof((void*)0)所占的字节数相同
+在C++11中，sizeof(nullptr) 与 sizeof((void*)0)所占的字节数相同
 为了提高代码的健壮性（软件对于规范要求以外的输入情况的处理能力），在表示指针空值时最好使用nullptr
