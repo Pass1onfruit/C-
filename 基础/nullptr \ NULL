@@ -1,0 +1,30 @@
+
+
+NULL:
+
+C/C++编程中，声明一个变量时最好给该变量一个合适的初始值，否则可能会出现不可预料的错误，比如未初始化的指针
+如果一个指针没有合法的指向，可以这样对其进行初始化
+int* p1 = NULL;
+int* p2 = 0;
+
+NULL实际是一个宏
+#ifndef NULL 
+#ifdef __cplusplus 
+#define NULL    0 
+#else 
+#define NULL    ((void *)0) 
+#endif 
+#endif 
+NULL被定义为字面常量0，或者被定义为无类型指针(void*)的常量
+
+nullptr:
+
+C++11给出了全新的nullptr表示空值指针
+C++11没有在NULL的基础上进行扩展，这是因为NULL就是一个宏，而且不同的编译器对于NULL的实现可能不太相同，而且直接扩展NULL，可能会影响以前旧的程序
+为了避免混淆，C++11提供了nullptr
+
+nullptr代表一个指针空值常量，nullptr类型为nullptr_t，仅仅可以被隐式转化为指针类型
+
+在使用nullptr表示指针空值时，不需要包含头文件，nullptr是C++11作为新关键字引入的
+ 在C++11中，sizeof(nullptr) 与 sizeof((void*)0)所占的字节数相同
+为了提高代码的健壮性（软件对于规范要求以外的输入情况的处理能力），在表示指针空值时最好使用nullptr
