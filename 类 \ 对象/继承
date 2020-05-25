@@ -1,10 +1,3 @@
-封装继承多态
-
-封装：
-将数据和操作数据的方法进行结合，隐藏对象的属性和实现细节，仅对外公开接口来和对象进行交互
-C++通过类，将一个对象的属性与行为结合在一起，使其更符合人们对于一件事物的认知，将属于该对象的 所有东西打包在一起；通过访问限定符选择性的将其部分功能开放出来与其他对象进行交互，而对于对象内 部的一些实现细节，外部用户不需要知道，知道了有些情况下也没用，反而增加了使用或者维护的难度，让 整个事情复杂化
-封装本质上是一种管理，在类中，使用类数据和方法都封装到一起， 不想给别人看到的，使用protected，private把成员封装起来，开放一些共有的成员函数能对成员合理的访问
-
 继承：
 继承机制是面向对象程序设计使代码可以复用的最重要的手段，它允许在保持原有类特性的基础上进行扩展，增加功能，产生新的类，称派生类
 继承呈现了面向对象程序设计的层次结构， 此前接触的复用都是函数复用，继承是类设计层次的复用
@@ -87,7 +80,153 @@ void Test()
 }
 
 
-类成员/继承方式 | public继承 | protected继承 | private继承
-基类的public成员 | 派生类的public成员 | 派生类的protected成员 |派生类的private成员
-基类的protected成员 |派生类的protected成员 | 派生类的protected成员 | 派生类的private成员
-基类的private成员 | 在派生类中不可见 | 在派生类中不可见 | 在派生类中不可见
+作用域：
+
+1. 在继承体系中基类和派生类都有独立的作用域
+ 2. 子类和父类中有同名成员，子类成员将屏蔽父类对同名成员的直接访问，这叫隐藏，也叫重定 义（在子类成员函数中，可以用 基类::基类成员 这样显示访问）
+3. 如果是成员函数的隐藏，只需要函数名相同就构成隐藏
+4. 在实际中在继承体系里面最好不要定义同名的成员
+ 
+class Person
+{
+protected:
+	string _name = "小李子"; // 姓名   
+	int _num = 111;        // 身份证号
+};
+
+class Student : public Person
+{
+public:
+	void Print()
+	{
+		cout << " 姓名:" << _name << endl;
+		cout << " 身份证号:" << Person::_num << endl;
+		cout << " 学号:" << _num << endl;
+	}
+protected:
+	int _num = 999; // 学号
+  // Student的_num和Person的_num构成隐藏关系，代码虽然能跑，但是非常混乱
+};
+
+void Test()
+{
+	Student s1;
+	s1.Print();
+};
+// B中的fun和A中的fun不是构成重载，因为不是在同一作用域
+// B中的fun和A中的fun构成隐藏，成员函数满足函数名相同就构成隐藏
+class A
+{
+public:
+	void fun()
+	{
+		cout << "func()" << endl;
+	}
+};
+class B : public A
+{
+public:
+	void fun(int i)
+	{
+		A::fun();
+		cout << "func(int i)->" << i << endl;
+	}
+};
+
+void Test()
+{
+	B b;
+	b.fun(10);
+};
+
+派生类中的默认成员函数 ：
+
+1. 派生类的构造函数必须调用基类的构造函数初始化基类的那一部分成员，如果基类没有默认的构造函数，则必须在派生类构造函数的初始化列表阶段显示调用
+2. 派生类的拷贝构造函数必须调用基类的拷贝构造完成基类的拷贝初始化
+3. 派生类的operator=必须要调用基类的operator=完成基类的复制
+4. 派生类的析构函数会在被调用完成后自动调用基类的析构函数清理基类成员，保证派生类对象先清理派生类成员再清理基类成员的顺序
+5. 派生类对象初始化先调用基类构造再调派生类构造
+6. 派生类对象析构清理先调用派生类析构再调基类的析构
+ 
+友元的继承：
+友元关系不能继承，基类友元不能访问子类私有和保护成员 
+
+静态成员的继承：
+基类定义了static静态成员，则整个继承体系里面只有一个这样的成员
+无论派生出多少个子类，都只有一 个static成员实例 
+
+
+菱形继承：
+单继承：一个子类只有一个直接父类时称这个继承关系为单继承 
+如：(class Person) <- (class Student:public Person) <- (class PostGraduate:public Student)
+
+多继承：一个子类有两个或以上直接父类时称这个继承关系为多继承 
+如：(class Student) (class Teacher) <- (class Assistant:public Student, public Teacher)
+
+菱形继承：菱形继承是多继承的一种特殊情况
+如：(class Person) <- (class Student:public Person) (class Teacher:public Person) <- (class Assistant:public Student, public Teacher)
+
+菱形继承有数据冗余和二义性的问题, 比如在Assistant 的对象中Person成员会有两份
+ 
+class Person
+{
+public:
+	string _name; // 姓名 
+};
+class Student : public Person
+{
+protected:
+	int _num; //学号 
+};
+class Teacher : public Person
+{
+protected:
+	int _id; // 职工编号
+};
+class Assistant : public Student, public Teacher
+{
+protected:
+	string _majorCourse; // 主修课程
+};
+void Test()
+{
+	Assistant a;
+	a._name = "peter";  // 这样会有二义性无法明确知道访问的是哪一个 
+
+	// 需要显示指定访问哪个父类的成员可以解决二义性问题，但是数据冗余问题无法解决  
+	a.Student::_name = "xxx";
+	a.Teacher::_name = "yyy";
+}
+ 
+虚拟继承可以解决菱形继承的二义性和数据冗余的问题
+如上面的继承关系，在Student和Teacher的继承 Person时使用虚拟继承，即可解决问题
+但是虚拟继承不要在其他地方去使用
+ 
+class Person
+{
+public:
+	string _name; // 姓名
+};
+class Student : virtual public Person
+{
+protected:
+	int _num; //学号 
+};
+class Teacher : virtual public Person
+{
+protected:    
+	int _id; // 职工编号
+};
+class Assistant : public Student, public Teacher
+{
+protected:    
+	string _majorCourse; // 主修课程
+};
+void Test()
+{
+	Assistant a;
+	a._name = "peter";
+}
+
+Assistant对象中将Person放到的了对象组成的最下面，这个Person同时属于Student和Teacher，Student和Teacher是通过了Student和Teacher的两个指针，指向的一张表找到自己的Person
+这两个指针叫虚基表指针，这两个表叫虚基表，虚基表中存的是偏移量，通过偏移量可以找到下面的Person
