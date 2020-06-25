@@ -27,4 +27,26 @@ a.out中的 代码指令 加载到 代码段
 然后建立main函数的栈帧，往下走
 进行资源销毁，结束
 
+C中的动态内存管理方式
+malloc（函数）  申请空间
+calloc  申请空间并初始化
+realloc  堆原有空间扩容
+free  释放空间
+int* p1 = (int*) malloc (sizeof (int));
+int* p3 = (int*)malloc (sizeof (int) *10);
+free (p1);
+free (p3);
 
+C++：
+new（操作符）
+delete
+int* p2= new int;
+int* p2= new int (10):  //申请一个int4个字节空间,初始化成10
+int*p4 = new int [10];  //申110个int的40个字节空间
+delete p2;
+delete [] p4:
+
+malloc和new 对于内置类型没有什么区别
+对于自定义类型不一样。
+malloc只申请空间；new申请空间+构造函数初始化
+free只释放空间；delete析构函数+释放空间
