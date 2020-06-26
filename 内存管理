@@ -46,7 +46,16 @@ int*p4 = new int [10];  //申110个int的40个字节空间
 delete p2;
 delete [] p4:
 
-malloc和new 对于内置类型没有什么区别
+operator new 为new开空间，也可以拿出来单独使用
+和 malloc用法功能一样
+int* p2 = (int*) operator new(sizeof (int));
+区别：使用方式一样，处理错误的方式不一样
+malloc返回错误码；operator new抛bad_alloc异常
+
+new 调用构造函数初始化，调operator new开空间，失败了抛异常
+malloc和new 对于内置类型（基本类型）没有什么区别
 对于自定义类型不一样。
 malloc只申请空间；new申请空间+构造函数初始化
-free只释放空间；delete析构函数+释放空间
+free只释放空间；delete调用析构函数清理+释放空间
+
+
