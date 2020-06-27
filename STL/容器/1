@@ -1,0 +1,15 @@
+
+泛型编程：使用模板，编写跟类型无关的代码
+一些函数和类的时候，针对不同类型需要写很多重复的代码
+函数:比如我们想实现交换int, double, char等等各种类型对象函数swap
+类:比如我们想实现一个数据结构栈stack, stack的多个对象st1存int, st2存double,等等。
+在没有模板之，我们得针对各个类型写很多个swap函数和stack类，而这些函数和类逻辑是一样的，只是处理的对象类型不同
+1、函数模板
+template<class T>void swap (T& a, T& b) ...}
+2、类模板
+template<class T>
+class stack
+{private:T* _a: size_t _size;size_t _capacity;}
+
+模板的原理：
+编译器根据调用函数模板和类模板的类型，实例化出对应的函数和类
