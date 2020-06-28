@@ -25,3 +25,23 @@ add(int a, int b, int c = 3, int d = 4);
 函数重载
 C语言不支持同名函数，因为链接找的过程中不能够区分
 C++允许，C++中传参数类型不一样，声明修饰也会不一样
+
+template<class T>
+T Add(const T& left, const T& right)
+{
+	return left + right;
+}
+int main()
+{
+	int a1 = 10, a2 = 20;
+	double d1 = 10.0, d2 = 20.0;
+	//隐式实例化  (T的类型是编译器自己推导的)
+	Add(a1, a2);
+	Add(d1, d2);  
+	Add(a1, (int)d1);
+        //Add(a1, d2);  报错
+	//显式实例化（指定T的类型)
+        Add<int>(a1, d1);
+
+	return 0;
+}
