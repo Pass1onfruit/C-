@@ -60,6 +60,51 @@ iterator erase (iterator position)    删除position位置的数据
 void swap (vector& x)    交换两个vector的数据空间
 reference operator[] (size_type n)    像数组一样访问
 
+template<class T>
+class Vector
+{
+	Vector()
+		:_a(nullptr)
+		, _size(0)
+		, _capacity(0)
+	{}
+
+	~Vector()
+	{
+		delete[] _a;
+		_a = nullptr;
+		_size = _capacity = 0;
+	}
+
+	void push_back(const T& data)
+	{
+		if (_size == _capacity)//空间满了，增容
+		{
+			size_t newcapacity = _capacity = 0 ? 2 : _capacity * 2;
+			//把旧空间数据移到新空间，delete旧空间
+		}
+		_a[_size] = data;
+		++size;
+	}
+	void pop_back()
+	{
+		assert(_size > 0);
+		--_size;
+	}
+
+	T& operator[] (size_t i)
+	{
+		assert(i < _size);
+		return _a[i];
+	}
+	//返回的只是常性的临时变量，加引用，能修改返回对象，减少拷贝
+	//传参加引用还能修改传递的实参
+
+private:
+	T* _a;
+	size_t _size;
+	size_t _capacity;
+};
 
 
 
