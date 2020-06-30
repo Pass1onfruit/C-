@@ -10,11 +10,13 @@ string(const string&s, size_t n)    用s中的前n个字符构造新的string类
 如：
 void TestString() 
 {    
-string s1;                // 构造空的string类对象s1    
-string s2("hello bit");   // 用C格式字符串构造string类对象s2    
-string s3(10, 'a');       // 用10个字符'a'构造string类对象s3    
-string s4(s2);            // 拷贝构造s4    
-string s5(s3, 5);         // 用s3中前5个字符构造string对象s5 
+ string s1;                // 构造空的string类对象s1    
+ string s2("hello bit");   // 用C格式字符串构造string类对象s2    
+ string s3(10, 'a');       // 用10个字符'a'构造string类对象s3    
+ string s4(s2);            // 拷贝构造s4    
+ string s5(s3, 5);         // 用s3中前5个字符构造string对象s5 
+ //如果给出的数过大，只会拷贝构造到对象的最末尾
+ string s6(s3, 1, 2);    // 用s3中第1个位置开始前2个字符构造 //el
 } 
 
 string类对象的容量操作：
