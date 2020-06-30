@@ -17,3 +17,30 @@ class stack
 写模板时调用记得用引用传值，如果是传int，char之类的没什么问题，如果是date之类的就很麻烦，直接成了拷贝构造，使用引用减少拷贝提高效率
 
 如果类里只做函数声明，函数写在类外，也要再给类外的函数写上相同的模板
+
+迭代器：
+
+迭代器不一定是指针，像指针一样的东西，有牵引性
+string::iterator it = s.begin();
+auto it = s.begin();
+//C++11  原理被替换成迭代器
+//范围for
+for （auto ch : s){}
+
+其他迭代器：
+string::reverse_iterator rit = s.rbegi n()  //反向迭代器，倒着走
+
+int string2int(const string& data) //一个把字符串转成整形的函数//常量 引用 规范
+{
+	int val = 0;
+	string::const_iterator it = data.begin();  //迭代器也需要定义为常量
+        //const类型迭代器只能读不能写
+        //*it = ‘a’；  //会报错
+	while (it != data.end())
+	{
+		val *= 10;
+		val += (*it) - '0';
+		++it;
+	}
+}
+
