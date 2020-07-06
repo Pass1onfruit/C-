@@ -6,18 +6,23 @@
 默认是一个大堆，大的优先级高
 priority_queue<int> pq;
 变成小堆：
-priority_queue<int, vector<int, greater<int>> pq;  //用greater记得加#include<function>
+priority_queue<int, vector<int, greater<int>> xxx;  //用greater记得加#include<function>
 
-template<class T, class Con = vector<T>>
+
+//默认是大堆
+//小堆priority_queue<int, vector<int, greater<int>> xxx;
+template<class T, class Container = vector<T>, class Compare = less<T>>
 class priority_queue
 {
 	//因为数据是一个个插进去的，所以可以一直保持堆的状态，简单的调整就行
 	void adJustUp(int child)
 	{
+		Compare com;
 		int parent = (child - 1) / 2;
 		while (child > 0)
 		{
-			if (_con[child] > _con[parent])
+			//if (_con[child] > _con[parent])
+			if(com(_con[parent], _con[child]))
 			{
 				swap(_con[parent], _con[child]);
 				child = parent;
@@ -36,16 +41,19 @@ class priority_queue
 
 	void adJustDown(int root)
 	{
+		Compare com;
 		int parent = root;
 		int child = parent * 2 + 1;//这是左孩子
 		while (child < _con.size())
 		{
 			//两个孩子中大的那一个
-			if (child + 1 < _con.size() && _con[child] < _con[child + 1])
+			//if (child + 1 < _con.size() && _con[child] < _con[child + 1])
+			if (child + 1 < _con.size() && com(_con[child], _con[child + 1]))
 			{
 				++child;
 			}
-			if (_con[child] > _con[parent])
+			//if (_con[child] > _con[parent])
+			if (com(_con[child]), _con[parent]))
 			{
 				swap(_con[child], _con[parent]);
 				parent = child;
@@ -71,5 +79,23 @@ class priority_queue
 		return _con.size();
 	}
 private:
-	Con _con;
+	Container _con;
+};
+
+//仿函数 函数对象
+template<class T>
+struct greater  //实际使用中greater就像一个函数，其实是一个对象
+{
+	operator() (const T& x1, const T& x2)
+	{
+		return x1 > x2;
+	}
+};
+template<class T>
+struct less
+{
+	operator() (const T& x1, const T& x2)
+	{
+		return x1 < x2;
+	}
 };
