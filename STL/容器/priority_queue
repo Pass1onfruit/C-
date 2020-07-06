@@ -1,0 +1,75 @@
+优先级队列priority_queue
+
+容器适配器都不支持迭代器遍历
+
+底层是一个堆
+默认是一个大堆，大的优先级高
+priority_queue<int> pq;
+变成小堆：
+priority_queue<int, vector<int, greater<int>> pq;  //用greater记得加#include<function>
+
+template<class T, class Con = vector<T>>
+class priority_queue
+{
+	//因为数据是一个个插进去的，所以可以一直保持堆的状态，简单的调整就行
+	void adJustUp(int child)
+	{
+		int parent = (child - 1) / 2;
+		while (child > 0)
+		{
+			if (_con[child] > _con[parent])
+			{
+				swap(_con[parent], _con[child]);
+				child = parent;
+				parent - (child - 1) / 2;
+			}
+			else
+				break;
+		}
+	}
+	void push(const T& data)
+	{
+		//O(logN)
+		_con.pus_back(data);
+		adJustUp(_con.size()-1);
+	}
+
+	void adJustDown(int root)
+	{
+		int parent = root;
+		int child = parent * 2 + 1;//这是左孩子
+		while (child < _con.size())
+		{
+			//两个孩子中大的那一个
+			if (child + 1 < _con.size() && _con[child] < _con[child + 1])
+			{
+				++child;
+			}
+			if (_con[child] > _con[parent])
+			{
+				swap(_con[child], _con[parent]);
+				parent = child;
+				child = parent * 2 + 1;
+			}
+			else
+				break;
+		}
+	}
+
+	void pop()
+	{
+		//O(logN)
+		swap(_con[0], _con[_con.size() - 1]);//把最小的pop出来
+		con.pop_back();
+		adJustDown(0);
+	}
+
+	T& top();
+
+	size_t size()
+	{
+		return _con.size();
+	}
+private:
+	Con _con;
+};
