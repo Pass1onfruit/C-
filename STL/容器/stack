@@ -1,0 +1,32 @@
+容器适配器
+可以用数组也可以用链表构成
+stl中的stack和queue是通过容器适配转换出来的，不是原生实现的。为了 复用
+
+
+template<class T, class container>//container是一个容器的类型
+class stack
+{
+	void push(const T& data)
+	{
+		_con.push_back(data);
+	}
+	void pop()
+	{
+		_con.pop_back();
+	}
+	size_t size()
+	{
+		return _con.size();
+	}
+	bool empty()
+	{
+		return _con.empty();
+	}
+	T& top()
+	{
+		return _con.back();
+	}
+
+private:
+	container _con;
+};
