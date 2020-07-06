@@ -1,0 +1,33 @@
+
+
+template<class T, class container>//container是一个容器的类型
+class queue
+{
+	void push(const T& data)
+	{
+		_con.push_back(data);
+	}
+	void pop()
+	{
+		_con.pop_front();
+	}
+	size_t size()
+	{
+		return _con.size();
+	}
+	bool empty()
+	{
+		return _con.empty();
+	}
+	T& front()
+	{
+		return _con.front();
+	}
+	T& back()
+	{
+		return _con.back();
+	}
+
+private:
+	container _con;
+};
