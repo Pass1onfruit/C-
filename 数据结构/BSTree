@@ -1,0 +1,162 @@
+#include<iostream>
+
+using namespace std;
+
+//搜索树的效率最坏情况是O(N)
+template<class T>
+struct BSTnode
+{
+	T data;
+	BSTnode<T>* left;
+	BSTnode<T>* right; 
+	BTSnode(const T& _data)
+		:data(_data)
+		,left(nullptr)
+		,right(nullptr)
+	{}
+};  
+
+template<class T>
+class BST
+{
+	typedef BSTnode<T> Node;
+public:
+	bool insert(const T& data)//需要有返回值，因为有可能插入失败，如数据重复
+	{
+		if (root == nullptr)
+		{
+			root = new Node(data);
+			return true;
+		}
+		Node* cur = root;//不为空则开始找插入位置
+		Node* parent = cur;
+		while (cur)
+		{
+			if (_data > cur->data)
+			{
+				parent = cur;
+				cur = cur->right;
+			}
+			else if (_data < cur->data)
+			{
+				parent = cur;
+				cur = cur->left;
+			}
+			else
+				return false;
+		}
+		cur = new Node(_data);
+		if (cur->data > parent->data)
+			parent->right = cur;
+		else
+			parent->left = cur;
+		return true;
+	}
+
+	bool find(const T& _data)
+	{
+		Node* cur = root;
+		while (cur)
+		{
+			if (_data > cur->data)
+			{
+				cur = cur->right;
+			}
+			else if (_data < cur->data)
+			{
+				cur = cur->left;
+			}
+			else
+				return true;
+		}
+		return false;
+	}
+
+	bool erase(const T& _data)
+	{
+		///////////////////
+		if (root == nullptr)
+		{
+			return false;
+		}
+		Node* cur = root;
+		Node* parent = cur;
+		while (cur)
+		{
+			if (_data > cur->data)
+			{
+				parent = cur;
+				cur = cur->right;
+			}
+			else if (_data < cur->data)
+			{
+				parent = cur;
+				cur = cur->left;
+			}
+			else //此时已经找到了
+			{ //几种不同的情况
+				if (cur->left == nullptr)
+				{
+					if (cur->data > parent->data)
+						parent->right = cur->right;
+					else
+						parent->left = cur->right;
+					delete cur;
+				}
+				else if (cur->right == nullptr)
+				{
+					if (cur->data > parent->data)
+						parent->right = cur->left;
+					else
+						parent->left = cur->left;
+					delete cur;
+				}
+				else //左右都不为空
+				{
+					//可以用替代法，把另一个符合要求的节点替代删除节点
+					//可以找其左子树的最大节点（最右）或右子树的最小节点（最左）替代
+					parent = cur;
+					Node* re = cur->left;
+					while (re->right)
+					{
+						parent = re;
+						re = re->right;
+					}
+					//T a = cur->data;
+					//erase(re->data); //再递归去删就太麻烦了，又要重新找
+					//cur->data = a;
+					cur->data - re->data;
+					parent->right = re->left;
+					delete re;
+				}
+				return true;
+			}
+		}
+		return false;
+	}
+
+	void _inOrder(Node* _root)//中序遍历
+	{
+		if (_root == nullptr)
+			return;
+		_inOrder(_root->left);
+		cout << _root->data << " ";
+		_inOrder(_root->right);
+	}
+
+	void inOrder(Node* _root)
+	{
+		_inOrder(_root);
+		cout << endl;
+	}
+
+private:
+	Node* root = nullptr;
+};
+
+
+int main()
+{
+
+	return 0;
+}
