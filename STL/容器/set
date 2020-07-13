@@ -1,0 +1,7 @@
+set
+特点：查找快
+关联式容器
+
+set<int>::iterator pos = s.find(30);    //O(logN) 
+set<int>::iterator pos = find(s, begin(), s.end(), 3);    //O(N)
+传类型就转成什么类型的迭代器
