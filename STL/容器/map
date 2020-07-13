@@ -1,0 +1,83 @@
+1. map是关联容器，它按照特定的次序(按照key来比较)存储由键值key和值value组合而成的元素。 
+2. 在map中，键值key通常用于排序和惟一地标识元素，而值value中存储与此键值key关联的内容。键值 key和值value的类型可能不同，并且在map的内部，key与value通过成员类型value_type绑定在一起， 为其取别名称为pair: typedef pair value_type
+3. 在内部，map中的元素总是按照键值key进行比较排序的 
+4. map中通过键值访问单个元素的速度通常比unordered_map容器慢，但map允许根据顺序对元素进行直接迭代(即对map中的元素进行迭代时，可以得到一个有序的序列) 
+5. map支持下标访问符，即在[]中放入key，就可以找到与key对应的value
+6. map通常被实现为二叉搜索树(更准确的说：平衡二叉搜索树(红黑树))
+
+和set的区别就是允许键值冗余
+
+m.insert(pair <int, int>(1, 2));
+m.insert(make_pair(1, 2));
+//make_pair//调用的构造函数，根据传的类型自动推演，构造一个pair对象
+
+
+
+int main()
+{
+	string strs[] = { "西瓜", "樱桃", "西瓜", "苹果","西瓜", "西瓜", "西瓜", "苹果" };
+	map<string, int > countMap;
+	for (auto& str : strs)
+	{
+		//insert有一个pair<iterator, bool>类型的返回值
+		//insert其实也可以充当查找的作用，如果没有就插入，返回新指向的元素，如果重复了就会返回false
+		pair<map<string, int>::iterator, bool> ret = countMap.insert(make_pair(str, 1));
+		//auto ret = countMap.insert(make pair(str, 1));
+		if (ret.second == false)
+		{
+			ret.first->second++;
+		}
+	}
+	//key是不可以修改的，因为底层是搜索树
+
+	//  []的实现
+	//mapped_type& operator[](const key_type& k)
+	//{
+	   // return (*((this->insert(make_pair(k, mapped_type()))).first)).second;
+	//}
+	for (auto& str : strs)
+	{
+		pair<map<string, int>::iterator, bool> ret = countMap.insert(make_pair(str, 1));
+		for (auto str : strs)
+		{
+			//如果水果不在map中,则operator[]会插入pair<str, 0>，返回映射对象(次数)的引用进行++
+			//如果水果在map中，则operator]返回水果对应的映射对象(次数)的引用，对它++
+			countMap[str]++;
+		}
+	}
+	countMap["香蕉"]; //插入，value是缺省值
+	countMap["香蕉"] = 1; //修改
+	cout << countMap["香蕉"] << endl; //查找
+	//一般不用[]做查找，因为如果没有找到会进行插入
+	countMap["哈密瓜"] = 5; //插入+修改//一般用法
+
+	for (auto& e : countMap)
+	{
+		cout << e.first << ":" << e.second << endl;
+	}
+
+	return 0;
+}
+
+[]的实现  6.18  (00:32:00)
+mapped_type& operator[](const key_type& k)
+{
+	return (*((this->insert(make_pair(k, mapped_type()))).first)).second;
+}
+
+四层：
+pair<iterator, bool>
+iterator
+pair<key_type, mapped_type)
+mapped_type
+
+为什么这里不用find是实现呢?
+原因：假设用find, 如果mp中没有这个k,如何返回?
+这里用insert
+1、如果不在map中,则插入pair<k, mapped_type()>，再返回映射对象的引用，mapped_type()为类型（value）的缺省值
+2、如果k在map中，则插入失败，返回所在节点中的映射对象的引用
+
+map的operator[]三层作用
+1、插入
+2、查找对应的映射对象
+3、修改h对应的映射对象
