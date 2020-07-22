@@ -106,6 +106,23 @@ private:
 	size_t _capacity;
 };
 
+
+
+string  和  vector<char>  区别
+
+string有'\0'，+=，比较大小，输入也不一样，更贴近字符串的操作
+
+	vector<char> vch;
+	vch.push_back('\0');
+	cout<<vch.size()<<endl;//输出1
+	
+	string s3="";
+	cout<<s3.size()<<endl;//输出0
+	
+	string s4="\0";
+	cout<<s4.size()<<endl;//输出0
+
+
 迭代器失效
 1.增容后
 迭代器还指向原来的空间，实际上数据已经在扩容新开的空间上了
