@@ -1,0 +1,94 @@
+C中的类型转换:
+
+void Test()
+{
+	int i = 1;
+	// 隐式类型转换
+	double d = i;
+	printf("%d, %.2f\n", i, d);
+	int* p = &i;
+	// 显示的强制类型转换
+	int address = (int)p;
+	printf("%x, %d\n", p, address);
+}
+缺陷： 
+转换的可视性比较差，所有的转换形式都是以一种相同形式书写，难以跟踪错误的转换
+
+C++:
+
+static_cast：
+static_cast用于非多态类型的转换（静态转换），编译器隐式执行的任何类型转换都可用static_cast，但它 不能用于两个不相关的类型进行转换
+int main()
+{
+	int i = 1;
+	double d = 12.34;
+	int a = static_cast<int>(d); //只能转换相近，相关类型（意义类似的类型）
+	//如int double char
+	int* p = &i;
+	//int a = static_cast<int>(p); //会报错
+	int a = reinterpret_cast<int>(p); //可以转换不相关类型
+	cout << a << endl;
+	return 0;
+}
+
+reinterpret_cast：
+reinterpret_cast操作符通常为操作数的位模式提供较低层次的重新解释，用于将一种类型转换为另一种不同的类型
+typedef void (*FUNC)();
+int DoSomething(int i)
+{
+	cout << "DoSomething" << endl;
+	return 0;
+}
+void Test()
+{
+	// reinterpret_cast可以编译器以FUNC的定义方式去看待DoSomething函数
+	// 所以非常的BUG，下面转换函数指针的代码是不可移植的，所以不建议这样用
+	// C++不保证所有的函数指针都被一样的使用，所以这样用有时会产生不确定的结果
+	FUNC f = reinterpret_cast<FUNC>(DoSomething);
+	f();
+}
+
+const_cast：
+const_cast 最常用的用途就是删除变量的const属性，方便赋值
+void Test()
+{
+	const int a = 2;
+	int* p = const_cast<int*>(&a); //可以去掉const属性的转换，比较危险
+	*p = 3;
+	cout << a << endl;
+}
+
+dynamic_cast：
+dynamic_cast 用于将一个父类对象的指针转换为子类对象的指针或引用（动态转换） 
+向上转型：子类对象指针->父类指针/引用(不需要转换，赋值兼容规则) 
+向下转型：父类对象指针->子类指针/ 引用(用dynamic_cast转型是安全的)
+1. dynamic_cast只能用于含有虚函数的类 
+2. dynamic_cast会先检查是否能转换成功，能成功则转 换，不能则返回NULL
+class A
+{
+public:
+	virtual void f() {}
+	int _a;
+};
+class B : public A
+{
+	int _b;
+};
+int main()
+{
+	A* a = new A;
+	B* b = new B;
+	//父指针 = 子指针 这个是直接就支持的切片，无需转换
+	a = b;
+	//子指针 = 父指针 需要转换的
+	// = (B*)a; //这样是不安全的 所看到的A里是并没有_b的
+	b = dynamic_cast<B*>(a); //这样才是安全的，如果a本身就是指针B类型的对象，就成功
+	// dynamic_cast会先检查是否能转换成功，能成功则转换，不能则返回NULL
+
+	cout << b << endl;
+
+	return 0;
+}
+
+dynamic_cast 可以用来识别指针是指向父类对象还是子类对象
+判断原理：含虚函数类虚表上方还有一个信息表储存父类子类信息
